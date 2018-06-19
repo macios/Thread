@@ -11,6 +11,9 @@
 #import "OperationVC.h"
 
 @interface ViewController ()
+{
+    dispatch_queue_t _myQueue;
+}
 @property (nonatomic, strong) NSThread *threadA;
 @property (nonatomic, strong) NSThread *threadB;
 @property (nonatomic, assign) NSInteger ticketsCount;
@@ -98,8 +101,8 @@
 
     self.threadB = [[NSThread alloc] initWithTarget:self selector:@selector(sellTickets) object:nil];
     self.threadB.name = @"售票员B";
+    _myQueue = dispatch_queue_create("com.sss", NULL);
     
-
 }
 
 // 点一下 模拟同时开始卖票
@@ -113,6 +116,8 @@
 //NSLock实现：在多任务时，多个线程同时访问一个对象，会锁住这个代码块，只有等到当前线程任务执行完毕，其他线程才能接着执行
 - (void)sellTickets
 {
+    [self sellTickets1];
+    return;
     //while模拟售票员一直在在卖票
     while (YES){
         // 加锁和解锁一定要成对出现
@@ -164,6 +169,29 @@
 //    }
 }
 
+-(void)sellTickets1{
+    
+    //while模拟售票员一直在在卖票
+    while (YES){
+        dispatch_sync(_myQueue, ^{
+            // 1.获取票数
+            NSInteger count = self.ticketsCount;
+            // 2.检查票数
+            if (count > 0)
+            {
+                // 3.暂停一会分线程  0.002 （保证两个都获取到了总票数 模拟理论上的情况）
+                [NSThread sleepForTimeInterval:2];
+                // 4.票数等于检查票数减一
+                self.ticketsCount = count - 1;
+            }
+            else
+            {
+                return;
+            }
+            NSLog(@"当前线程%@ 剩余%d",[NSThread currentThread],(int)self.ticketsCount);
+        }); 
+    }
+}
 
 
 @end

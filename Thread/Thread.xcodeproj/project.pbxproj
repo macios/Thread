@@ -17,6 +17,7 @@
 		5625241A20D7C31B001E4E6A /* ThreadUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5625241920D7C31B001E4E6A /* ThreadUITests.m */; };
 		56AB5BC820D8981400357619 /* GCDVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 56AB5BC720D8981400357619 /* GCDVC.m */; };
 		56AB5BCB20D8983200357619 /* OperationVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 56AB5BCA20D8983200357619 /* OperationVC.m */; };
+		56AB5BD020D8CC1500357619 /* ResourcesCompeteVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 56AB5BCF20D8CC1500357619 /* ResourcesCompeteVC.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,8 @@
 		56AB5BC720D8981400357619 /* GCDVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDVC.m; sourceTree = "<group>"; };
 		56AB5BC920D8983200357619 /* OperationVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OperationVC.h; sourceTree = "<group>"; };
 		56AB5BCA20D8983200357619 /* OperationVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OperationVC.m; sourceTree = "<group>"; };
+		56AB5BCE20D8CC1500357619 /* ResourcesCompeteVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ResourcesCompeteVC.h; sourceTree = "<group>"; };
+		56AB5BCF20D8CC1500357619 /* ResourcesCompeteVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ResourcesCompeteVC.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,15 +110,13 @@
 		562523F420D7C318001E4E6A /* Thread */ = {
 			isa = PBXGroup;
 			children = (
+				56AB5BCD20D8CB7600357619 /* Operation */,
+				56AB5BCC20D8CB5C00357619 /* GCD */,
 				5625242720D7E09F001E4E6A /* NSThread */,
 				562523F520D7C318001E4E6A /* AppDelegate.h */,
 				562523F620D7C318001E4E6A /* AppDelegate.m */,
 				562523F820D7C318001E4E6A /* ViewController.h */,
 				562523F920D7C318001E4E6A /* ViewController.m */,
-				56AB5BC620D8981400357619 /* GCDVC.h */,
-				56AB5BC720D8981400357619 /* GCDVC.m */,
-				56AB5BC920D8983200357619 /* OperationVC.h */,
-				56AB5BCA20D8983200357619 /* OperationVC.m */,
 				562523FB20D7C318001E4E6A /* Main.storyboard */,
 				562523FE20D7C31A001E4E6A /* Assets.xcassets */,
 				5625240020D7C31A001E4E6A /* LaunchScreen.storyboard */,
@@ -148,6 +149,26 @@
 			children = (
 			);
 			path = NSThread;
+			sourceTree = "<group>";
+		};
+		56AB5BCC20D8CB5C00357619 /* GCD */ = {
+			isa = PBXGroup;
+			children = (
+				56AB5BC620D8981400357619 /* GCDVC.h */,
+				56AB5BC720D8981400357619 /* GCDVC.m */,
+				56AB5BCE20D8CC1500357619 /* ResourcesCompeteVC.h */,
+				56AB5BCF20D8CC1500357619 /* ResourcesCompeteVC.m */,
+			);
+			path = GCD;
+			sourceTree = "<group>";
+		};
+		56AB5BCD20D8CB7600357619 /* Operation */ = {
+			isa = PBXGroup;
+			children = (
+				56AB5BC920D8983200357619 /* OperationVC.h */,
+				56AB5BCA20D8983200357619 /* OperationVC.m */,
+			);
+			path = Operation;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -284,6 +305,7 @@
 				56AB5BC820D8981400357619 /* GCDVC.m in Sources */,
 				5625240520D7C31A001E4E6A /* main.m in Sources */,
 				562523F720D7C318001E4E6A /* AppDelegate.m in Sources */,
+				56AB5BD020D8CC1500357619 /* ResourcesCompeteVC.m in Sources */,
 				56AB5BCB20D8983200357619 /* OperationVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
