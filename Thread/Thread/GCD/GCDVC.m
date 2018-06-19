@@ -10,7 +10,7 @@
 #import "ResourcesCompeteVC.h"
 
 @interface GCDVC ()
-
+@property(nonatomic,assign)NSInteger count;
 @end
 
 @implementation GCDVC
@@ -100,6 +100,8 @@
 //        // do some work on data at index
 //        dispatch_source_merge_data(source, 1);
 //    });
+    
+    [self lock];
 }
 
 -(void)syncD{
@@ -189,6 +191,30 @@
  // Pass the selected object to the new view controller.
  }
  */
+
+-(void)lock{
+    _count = 20;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [self sellTiket];
+    });
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [self sellTiket];
+    });
+}
+
+-(void)sellTiket{
+    while (1) {
+        @synchronized(self){
+            if (_count > 0) {
+                _count --;
+                [NSThread sleepForTimeInterval:0.5];
+                NSLog(@"%@+剩余票数：%d",[NSThread currentThread],(int)_count);
+            }else{
+                return;
+            }
+        }
+    }
+}
 
 @end
 
