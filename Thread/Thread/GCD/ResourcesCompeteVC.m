@@ -36,7 +36,7 @@
 //        [self compete2];
     
     //分配资源
-    [self compete3];
+//    [self compete3];
     
 }
 
