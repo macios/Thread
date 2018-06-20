@@ -102,6 +102,8 @@
 //    });
     
     [self lock];
+    
+    [self gcdTimer];
 }
 
 -(void)syncD{
@@ -216,6 +218,36 @@
     }
 }
 
+- (void)gcdTimer{
+    
+    __block int timeout = 10; //倒计时时间
+    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(0, 0));
+    if (timeout!=0) {
+        dispatch_source_set_timer(timer,dispatch_walltime(NULL, 0),1.0*NSEC_PER_SEC, 0); //每秒执行
+        dispatch_source_set_event_handler(timer, ^{
+            if(timeout<=0){ //倒计时结束，关闭
+                dispatch_source_cancel(timer);
+                dispatch_async(dispatch_get_main_queue(), ^{ // block 回调
+                    NSLog(@"倒计时完成");
+                });
+            }else{
+//                int days = (int)(timeout/(3600*24));
+//                int hours = (int)((timeout-days*24*3600)/3600);
+//                int minute = (int)(timeout-days*24*3600-hours*3600)/60;
+//                int second = timeout-days*24*3600-hours*3600-minute*60;
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    if (progressBlock) { //进度回调
+//                        progressBlock(days, hours, minute, second);
+//                    }
+//                });
+                NSLog(@"剩余:%d",timeout);
+                timeout--;
+            }
+        });
+        dispatch_resume(timer);
+    }
+    
+}
 @end
 
 
