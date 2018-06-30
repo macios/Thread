@@ -50,8 +50,11 @@
     //异步将一个队列放到任务组里面去执行
     dispatch_group_async(dispatch_group_create(), globalDispatchQueueHigh, ^{});
     
+//    异步不一定就会开启多条线程
     //开启一个串行队列
-    dispatch_queue_t mySerialDispatchQueue = dispatch_queue_create("com.river.myserialdispatchqueue", NULL);
+    dispatch_queue_t mySerialDispatchQueue = dispatch_queue_create("com.river.myserialdispatchqueue", DISPATCH_QUEUE_SERIAL);
+    //开启一个并行行队列
+    dispatch_queue_t myConcurrentDispatchQueue = dispatch_queue_create("com.river.myserialdispatchqueue", DISPATCH_QUEUE_CONCURRENT);
     //开启一个全局后台队列
     dispatch_queue_t globalDispatchQueueBackGround = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
     //这个串行队列是在后台执行的,设置队列
@@ -67,12 +70,12 @@
     
     //异步执行并回调-有序 →做完以后做其他功能
 //    [self asyncA];
-    //同步执行并回调-无序 →做完以后做其他功能
-//    [self syncB];
+    //异步执行并回调-无序 →做完以后做其他功能
+//    [self asyncB];
     //异步执行并回调-无序 →做完以后做其他功能
 //    [self asyncC];
     //异步同步依次执行
-    [self syncD];
+//    [self syncD];
     
     //取消正在执行的线程
 //    dispatch_suspend(globalDispatchQueueHigh);
@@ -101,9 +104,17 @@
 //        dispatch_source_merge_data(source, 1);
 //    });
     
-    [self lock];
+//    [self lock];
+//    [self gcdTimer];
     
-    [self gcdTimer];
+//    [self asyncSerial];//异步串行
+//    [self syncSerial];//同步串行
+//    [self asyncConcurrent];//异步并发
+//    [self syncConcurrent];//同步并发
+    
+    //嵌套使用
+//    [self nest];
+    [self nest1];
 }
 
 -(void)syncD{
@@ -122,21 +133,23 @@
 -(void)asyncC{
     dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
     NSArray *arrB = @[@"1",@"2",@"3",@"4",@"5"];
-    dispatch_async(queue,^{
+//    dispatch_async(queue,^{
         dispatch_apply([arrB count],queue, ^(size_t index){
             [NSThread sleepForTimeInterval:1];
             NSLog(@"异步C功能%zu",index);
         });
         NSLog(@"异步C功能已完成");
-    });
+//    });
 }
 
--(void)syncB{
+-(void)asyncB{
     dispatch_queue_t queueB = dispatch_get_global_queue(0, 0);
     NSArray *arrB = @[@"1",@"2",@"3",@"4",@"5"];
+    //第一个参数为次数
     dispatch_apply([arrB count],queueB, ^(size_t index){
         [NSThread sleepForTimeInterval:1];
-        NSLog(@"B功能%zu",index);
+        
+        NSLog(@"B功能%zu %@",index,[NSThread currentThread]);
     });
     NSLog(@"B功能已完成");
 }
@@ -247,6 +260,101 @@
         dispatch_resume(timer);
     }
     
+}
+
+
+/**
+ 异步串行：会开启一条线程，这里是串行队列，只会开一一条线程，并以此执行
+ */
+-(void)asyncSerial{
+    NSLog(@"begin");
+    dispatch_queue_t queue = dispatch_queue_create("com.aaaa", DISPATCH_QUEUE_SERIAL);
+    for (int i = 0; i < 10; i ++) {
+        dispatch_async(queue, ^{
+            NSLog(@"%d %@",i,[NSThread currentThread]);
+        });
+    }
+    
+    NSLog(@"end");
+}
+
+
+/**
+ 同步会阻塞当前线程，不会新开线程
+ */
+-(void)syncSerial{
+    NSLog(@"begin");
+    dispatch_queue_t queue = dispatch_queue_create("com.aaaa", DISPATCH_QUEUE_SERIAL);
+    for (int i = 0; i < 10; i ++) {
+        dispatch_sync(queue, ^{
+            NSLog(@"%d %@",i,[NSThread currentThread]);
+        });
+    }
+    
+    NSLog(@"end");
+}
+
+/**
+ 异步并发：开辟多条线程
+ */
+-(void)asyncConcurrent{
+    NSLog(@"begin");
+    dispatch_queue_t queue = dispatch_queue_create("com.aaaa", DISPATCH_QUEUE_CONCURRENT);
+    for (int i = 0; i < 10; i ++) {
+        dispatch_async(queue, ^{
+            NSLog(@"%d %@",i,[NSThread currentThread]);
+        });
+    }
+    
+    NSLog(@"end");
+}
+
+/**
+ 同步并发：开辟多条线程
+ */
+-(void)syncConcurrent{
+    NSLog(@"begin");
+    dispatch_queue_t queue = dispatch_queue_create("com.aaaa", DISPATCH_QUEUE_CONCURRENT);
+    for (int i = 0; i < 10; i ++) {
+        dispatch_sync(queue, ^{
+            NSLog(@"%d %@",i,[NSThread currentThread]);
+        });
+    }
+    
+    NSLog(@"end");
+}
+
+/**
+ 同步会阻塞线程至块中当前线程中的任务结束
+ 异步选择性开辟现场
+ 串行队列等待执行开辟一条线程
+ 并行队列并发执行
+ */
+-(void)nest{
+    NSLog(@"begin");
+    dispatch_queue_t queue = dispatch_queue_create("com.aaaa", DISPATCH_QUEUE_CONCURRENT);
+        dispatch_sync(queue, ^{
+            NSLog(@"1 %@",[NSThread currentThread]);
+            dispatch_async(queue, ^{
+                NSLog(@"2 %@",[NSThread currentThread]);
+            });
+            
+            NSLog(@"3 %@",[NSThread currentThread]);
+        });
+    NSLog(@"end");
+}
+
+-(void)nest1{
+    NSLog(@"begin");
+    dispatch_queue_t queue = dispatch_queue_create("com.aaaa", DISPATCH_QUEUE_SERIAL);
+    dispatch_sync(queue, ^{
+        NSLog(@"1 %@",[NSThread currentThread]);
+        dispatch_async(queue, ^{
+            NSLog(@"2 %@",[NSThread currentThread]);
+        });
+        NSLog(@"3 %@",[NSThread currentThread]);
+    });
+    NSLog(@"end");
 }
 @end
 
