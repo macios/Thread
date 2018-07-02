@@ -8,6 +8,7 @@
 
 #import "GCDVC.h"
 #import "ResourcesCompeteVC.h"
+#import "GCDAPIVC.h"
 
 @interface GCDVC ()
 @property(nonatomic,assign)NSInteger count;
@@ -19,11 +20,17 @@
     [super viewDidLoad];
     [self creatBtn];
     
-    //延时操作
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"延时操作");
-    });
+    //常用方法
+    [self common];
     
+    //嵌套使用
+    //    [self nest];
+    //    [self nest1];
+    //    [self nest2];
+    //    [self main];
+}
+
+-(void)common{
     //全局队列
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -35,7 +42,7 @@
     
     //Serial串行，Concurrent并行
     //1.主队列：串行
-//    dispatch_queue_t mainDispatchQueue = dispatch_get_main_queue();
+    //    dispatch_queue_t mainDispatchQueue = dispatch_get_main_queue();
     //2.全局队列：并行
     //执行优先级:
     // DISPATCH_QUEUE_PRIORITY_HIGH 2               高
@@ -50,7 +57,7 @@
     //异步将一个队列放到任务组里面去执行
     dispatch_group_async(dispatch_group_create(), globalDispatchQueueHigh, ^{});
     
-//    异步不一定就会开启多条线程
+    //    异步不一定就会开启多条线程
     //开启一个串行队列
     dispatch_queue_t mySerialDispatchQueue = dispatch_queue_create("com.river.myserialdispatchqueue", DISPATCH_QUEUE_SERIAL);
     //开启一个并行行队列
@@ -69,52 +76,48 @@
     
     
     //异步执行并回调-有序 →做完以后做其他功能
-//    [self asyncA];
+    //    [self asyncA];
     //异步执行并回调-无序 →做完以后做其他功能
-//    [self asyncB];
+    //    [self asyncB];
     //异步执行并回调-无序 →做完以后做其他功能
-//    [self asyncC];
+    //    [self asyncC];
     //异步同步依次执行
-//    [self syncD];
+    //    [self syncD];
     
     //取消正在执行的线程
-//    dispatch_suspend(globalDispatchQueueHigh);
-//    globalDispatchQueueHigh = nil;
+    //    dispatch_suspend(globalDispatchQueueHigh);
+    //    globalDispatchQueueHigh = nil;
     
     //dispatch_set_target_queue详解
-//    dispatch_set_target_queue(<#dispatch_object_t  _Nonnull object#>, <#dispatch_queue_t  _Nullable queue#>)
+    //    dispatch_set_target_queue(<#dispatch_object_t  _Nonnull object#>, <#dispatch_queue_t  _Nullable queue#>)
     
     //计时器
-//    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(0, 0));
-//    dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
-//    dispatch_source_set_event_handler(timer, ^{
-//        NSLog(@"%@",timer);
-//    });
-//    dispatch_resume(timer);
+    //    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(0, 0));
+    //    dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+    //    dispatch_source_set_event_handler(timer, ^{
+    //        NSLog(@"%@",timer);
+    //    });
+    //    dispatch_resume(timer);
     
     //dispatch_source_t详解
-//    dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_DATA_ADD, 0, 0, dispatch_get_main_queue());
-//    dispatch_source_set_event_handler(source, ^{
-//        NSLog(@"%@",source);
-//    });
-//    dispatch_resume(source);
-//    NSArray *arr = @[@"1",@"2",@"3",@"4",@"5"];
-//    dispatch_apply([arr count], dispatch_get_global_queue(0, 0), ^(size_t index) {
-//        // do some work on data at index
-//        dispatch_source_merge_data(source, 1);
-//    });
+    //    dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_DATA_ADD, 0, 0, dispatch_get_main_queue());
+    //    dispatch_source_set_event_handler(source, ^{
+    //        NSLog(@"%@",source);
+    //    });
+    //    dispatch_resume(source);
+    //    NSArray *arr = @[@"1",@"2",@"3",@"4",@"5"];
+    //    dispatch_apply([arr count], dispatch_get_global_queue(0, 0), ^(size_t index) {
+    //        // do some work on data at index
+    //        dispatch_source_merge_data(source, 1);
+    //    });
     
-//    [self lock];
-//    [self gcdTimer];
+    //    [self lock];
+    //    [self gcdTimer];
     
-//    [self asyncSerial];//异步串行
-//    [self syncSerial];//同步串行
-//    [self asyncConcurrent];//异步并发
-//    [self syncConcurrent];//同步并发
-    
-    //嵌套使用
-//    [self nest];
-    [self nest1];
+    //    [self asyncSerial];//异步串行
+    //    [self syncSerial];//同步串行
+    //    [self asyncConcurrent];//异步并发
+    //    [self syncConcurrent];//同步并发
 }
 
 -(void)syncD{
@@ -133,13 +136,13 @@
 -(void)asyncC{
     dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
     NSArray *arrB = @[@"1",@"2",@"3",@"4",@"5"];
-//    dispatch_async(queue,^{
-        dispatch_apply([arrB count],queue, ^(size_t index){
-            [NSThread sleepForTimeInterval:1];
-            NSLog(@"异步C功能%zu",index);
-        });
-        NSLog(@"异步C功能已完成");
-//    });
+    //    dispatch_async(queue,^{
+    dispatch_apply([arrB count],queue, ^(size_t index){
+        [NSThread sleepForTimeInterval:1];
+        NSLog(@"异步C功能%zu",index);
+    });
+    NSLog(@"异步C功能已完成");
+    //    });
 }
 
 -(void)asyncB{
@@ -178,10 +181,20 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     UIButton *btn1 = [UIButton buttonWithType:UIButtonTypeSystem];
-    btn1.frame = CGRectMake(20, 100, 100, 200);
+    btn1.frame = CGRectMake(20, 100, 200, 200);
     [btn1 setTitle:@"ResourcesCompeteVC" forState:UIControlStateNormal];
     [btn1 addTarget:self action:@selector(toResourcesCompeteClick) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:btn1];
+    
+    UIButton *btn2 = [UIButton buttonWithType:UIButtonTypeSystem];
+    btn2.frame = CGRectMake(20, 200, 200, 200);
+    [btn2 setTitle:@"GCDAPIVC" forState:UIControlStateNormal];
+    [btn2 addTarget:self action:@selector(toAPI) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:btn2];
+}
+
+-(void)toAPI{
+    [self.navigationController pushViewController:[GCDAPIVC new] animated:YES];
 }
 
 -(void)toResourcesCompeteClick{
@@ -244,15 +257,15 @@
                     NSLog(@"倒计时完成");
                 });
             }else{
-//                int days = (int)(timeout/(3600*24));
-//                int hours = (int)((timeout-days*24*3600)/3600);
-//                int minute = (int)(timeout-days*24*3600-hours*3600)/60;
-//                int second = timeout-days*24*3600-hours*3600-minute*60;
-//                dispatch_async(dispatch_get_main_queue(), ^{
-//                    if (progressBlock) { //进度回调
-//                        progressBlock(days, hours, minute, second);
-//                    }
-//                });
+                //                int days = (int)(timeout/(3600*24));
+                //                int hours = (int)((timeout-days*24*3600)/3600);
+                //                int minute = (int)(timeout-days*24*3600-hours*3600)/60;
+                //                int second = timeout-days*24*3600-hours*3600-minute*60;
+                //                dispatch_async(dispatch_get_main_queue(), ^{
+                //                    if (progressBlock) { //进度回调
+                //                        progressBlock(days, hours, minute, second);
+                //                    }
+                //                });
                 NSLog(@"剩余:%d",timeout);
                 timeout--;
             }
@@ -333,14 +346,14 @@
 -(void)nest{
     NSLog(@"begin");
     dispatch_queue_t queue = dispatch_queue_create("com.aaaa", DISPATCH_QUEUE_CONCURRENT);
-        dispatch_sync(queue, ^{
-            NSLog(@"1 %@",[NSThread currentThread]);
-            dispatch_async(queue, ^{
-                NSLog(@"2 %@",[NSThread currentThread]);
-            });
-            
-            NSLog(@"3 %@",[NSThread currentThread]);
+    dispatch_sync(queue, ^{
+        NSLog(@"1 %@",[NSThread currentThread]);
+        dispatch_async(queue, ^{
+            NSLog(@"2 %@",[NSThread currentThread]);
         });
+        
+        NSLog(@"3 %@",[NSThread currentThread]);
+    });
     NSLog(@"end");
 }
 
@@ -356,6 +369,40 @@
     });
     NSLog(@"end");
 }
+
+
+/**
+ 串行同步相互等待死锁
+ 并行同步不等待不会死锁
+ */
+-(void)nest2{
+    NSLog(@"begin");
+    dispatch_queue_t queue = dispatch_queue_create("com.aaaa", DISPATCH_QUEUE_SERIAL);
+    dispatch_sync(queue, ^{
+        NSLog(@"1 %@",[NSThread currentThread]);
+        dispatch_sync(queue, ^{
+            NSLog(@"2 %@",[NSThread currentThread]);
+        });
+        NSLog(@"3 %@",[NSThread currentThread]);
+    });
+    NSLog(@"end");
+}
+
+
+/**
+ 主队列async不会开辟新线程，如果用sync会死锁
+ */
+-(void)main{
+    NSLog(@"begin");
+    dispatch_queue_t queue = dispatch_get_main_queue();
+    NSLog(@"1 %@",[NSThread currentThread]);
+    dispatch_async(queue, ^{
+        NSLog(@"2 %@",[NSThread currentThread]);
+    });
+    NSLog(@"end");
+}
+
 @end
+
 
 

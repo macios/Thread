@@ -36,31 +36,17 @@
     //
     //    在我们编写程序时，有的任务会花取大量时间进行处理，所以我们为了防止这些任务阻塞到我们的主线程，造成UI卡顿，会用到多线程编程。
     //    多个线程可以同时执行的，提高完成任务效率。
+    
+//    1.线程安全：执行的结果是可预见的
+//    2.线程不安全：执行的结果是不可控的-多个线程同时执行一个任务。确保同时只有一条线程操作就行了，不用相同线程
     [self nsThread];
-    
-    [self creatBtn];
 }
 
--(void)creatBtn{
-    UIButton *btn = [UIButton buttonWithType:UIButtonTypeSystem];
-    btn.frame = CGRectMake(20, 40, 100, 50);
-    [btn setTitle:@"GCD" forState:UIControlStateNormal];
-    [btn addTarget:self action:@selector(toGCDClick) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:btn];
-    
-    UIButton *btna = [UIButton buttonWithType:UIButtonTypeSystem];
-    btna.frame = CGRectMake(20, 100, 100, 50);
-    [btna setTitle:@"Operation" forState:UIControlStateNormal];
-    [btna addTarget:self action:@selector(toOperationClick) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:btna];
+- (IBAction)GCDClick:(UIButton *)sender {
+    [self.navigationController pushViewController:[GCDVC new] animated:YES];
 }
-
--(void)toGCDClick{
-    [self presentViewController:[GCDVC new] animated:YES completion:nil];
-}
-
--(void)toOperationClick{
-    [self presentViewController:[OperationVC new] animated:YES completion:nil];
+- (IBAction)OperationClick:(id)sender {
+    [self.navigationController pushViewController:[OperationVC new] animated:YES];
 }
 
 -(void)nsThread{
